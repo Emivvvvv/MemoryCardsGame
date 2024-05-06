@@ -12,6 +12,9 @@ public class MemoryGameMenu extends JFrame {
         setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        
+        UIManager.put("OptionPane.background", null);
+        UIManager.put("Panel.background", null);
 
         // Load the background image
         ImageIcon background = new ImageIcon("assets/background.jpg");

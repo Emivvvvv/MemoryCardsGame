@@ -126,18 +126,7 @@ public class MemoryGameLevelScreen extends JFrame {
 
         // Top panel with level and tries
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        switch (currentLevel) {
-        case 1:
-        	topPanel.setBackground(new Color(70, 130, 180));
-        	break;
-        case 2:
-        	topPanel.setBackground(new Color(150, 120, 180));
-        	break;
-        case 3:
-        	topPanel.setBackground(new Color(220, 20, 60));
-        	break;
-        }
-        
+        topPanel.setBackground(getLevelColor());
         
         Font labelFont = new Font("Monospaced", Font.BOLD, 16);
 
@@ -153,6 +142,9 @@ public class MemoryGameLevelScreen extends JFrame {
         triesLabel.setFont(labelFont);
         topPanel.add(triesLabel);
         add(topPanel, BorderLayout.NORTH);
+        
+        UIManager.put("OptionPane.background", getLevelColor());
+        UIManager.put("Panel.background", getLevelColor());
 
         // Center grid for cards
         JPanel gridPanel = new JPanel(new GridLayout(GRID_SIZE, GRID_SIZE, 5, 5));
@@ -395,5 +387,17 @@ public class MemoryGameLevelScreen extends JFrame {
             icons[i] = new ImageIcon("assets/lvl" + level + "/" + i + ".png");
         }
         return icons;
+    }
+    private Color getLevelColor() {
+    	switch (currentLevel) {
+        case 1:
+        	return new Color(70, 130, 180);
+        case 2:
+        	return new Color(150, 120, 180);
+        case 3:
+        	return new Color(220, 20, 60);
+        default:
+        	return new Color(255, 255, 255);
+        }
     }
 }
