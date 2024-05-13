@@ -24,6 +24,7 @@ public class MemoryGameLevelScreen extends JFrame {
     private final ImageIcon[] pairIcons;
     private boolean[] cardFlipped;
     private boolean[] cardMatched;
+    private boolean isBusy = true; // State variable to control interaction
 
     private int triesLeft;
     private int firstSelected = -1;
@@ -174,8 +175,8 @@ public class MemoryGameLevelScreen extends JFrame {
     }
 
     private void handleCardFlip(int index, ImageIcon cardIcon) {
-        if (cardFlipped[index] || secondSelected != -1) {
-            return; // Already flipped or two cards are already selected
+        if (cardFlipped[index] || secondSelected != -1 || isBusy) {
+            return; // Already flipped or two cards are already selected or busy with shuffling
         }
 
         // Flip the card
@@ -261,6 +262,8 @@ public class MemoryGameLevelScreen extends JFrame {
     }
 
     private void shuffleCards() {
+    	isBusy = true; // Set the game as busy
+    	
         final int shuffleCount = 30; // Number of visual shuffles
         final int shuffleDelay = 20; // Delay between shuffles in milliseconds
 
@@ -317,6 +320,7 @@ public class MemoryGameLevelScreen extends JFrame {
                                     cards[i].setIcon(questionIcon);
                                 }
                             }
+                            isBusy = false; // Set the game as not busy
                             ((Timer) e.getSource()).stop();
                         }
                     }).start();
