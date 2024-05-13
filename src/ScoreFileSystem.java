@@ -71,8 +71,8 @@ public class ScoreFileSystem {
     }
 
     public void saveUserScore() {
-        int highestScore = LoginPage.player.getUserHighestScore();
-        scoresMap.put(dateAndTime() + LoginPage.player.getUsername(), highestScore);
+        int newScore = LoginPage.player.getScore();
+        scoresMap.put(dateAndTime() + LoginPage.player.getUsername(), newScore);
         saveScores();
     }
 

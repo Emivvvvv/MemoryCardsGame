@@ -1,4 +1,6 @@
 allahuakbar:1
+nik:123
+kevo:kevo
 ekilips:123
 scoretest:123
 deneme:deneme
