@@ -262,38 +262,37 @@ public class MemoryGameLevelScreen extends JFrame {
     }
 
     private void shuffleCards() {
-    	isBusy = true; // Set the game as busy
-    	
+        isBusy = true; // Set the game as busy
+
         final int shuffleCount = 30; // Number of visual shuffles
         final int shuffleDelay = 20; // Delay between shuffles in milliseconds
 
         LoginPage.soundManager.shuffling();
 
-        // Start background thread to shuffle only unmatched cards
-        Thread shuffleThread = new Thread(new Runnable() {
-            public void run() {
-                List<Integer> unmatchedIndices = new ArrayList<>();
-                for (int i = 0; i < cardMatched.length; i++) {
-                    if (!cardMatched[i]) {
-                        unmatchedIndices.add(i);
-                    }
+        // Background thread to shuffle actual data
+        Thread shuffleThread = new Thread(() -> {
+            List<Integer> unmatchedIndices = new ArrayList<>();
+            for (int i = 0; i < cardMatched.length; i++) {
+                if (!cardMatched[i]) {
+                    unmatchedIndices.add(i);
                 }
+            }
 
-                Collections.shuffle(unmatchedIndices);
-                List<ImageIcon> tempIcons = new ArrayList<>();
-                for (int index : unmatchedIndices) {
-                    tempIcons.add(cardIcons.get(index));
-                }
-                Collections.shuffle(tempIcons);
+            Collections.shuffle(unmatchedIndices);
+            List<ImageIcon> tempIcons = new ArrayList<>();
+            for (int index : unmatchedIndices) {
+                tempIcons.add(cardIcons.get(index));
+            }
+            Collections.shuffle(tempIcons);
 
-                for (int i = 0; i < unmatchedIndices.size(); i++) {
-                    cardIcons.set(unmatchedIndices.get(i), tempIcons.get(i));
-                }
+            for (int i = 0; i < unmatchedIndices.size(); i++) {
+                cardIcons.set(unmatchedIndices.get(i), tempIcons.get(i));
             }
         });
         shuffleThread.start();
 
-        // Shuffle animation
+        // Visual shuffle using a temporary list
+        List<ImageIcon> tempCardIcons = new ArrayList<>(cardIcons); // Create a temporary list for visual shuffle
         ActionListener shuffleAction = new ActionListener() {
             private int count = 0;
 
@@ -306,12 +305,17 @@ public class MemoryGameLevelScreen extends JFrame {
                         index2 = (int) (Math.random() * cardIcons.size());
                     } while (cardMatched[index1] || cardMatched[index2]); // Ensure selected indices are not matched
 
-                    Collections.swap(cardIcons, index1, index2);
-                    cards[index1].setIcon(cardIcons.get(index1));
-                    cards[index2].setIcon(cardIcons.get(index2));
+                    Collections.swap(tempCardIcons, index1, index2);
+                    cards[index1].setIcon(tempCardIcons.get(index1));
+                    cards[index2].setIcon(tempCardIcons.get(index2));
                     count++;
                 } else {
                     ((Timer) evt.getSource()).stop();
+                    // Ensure actual data is reflected after visual shuffle
+                    for (int i = 0; i < cards.length; i++) {
+                        cards[i].setIcon(cardIcons.get(i));
+                    }
+
                     new Timer(DELAY_TIME[currentLevel - 1], new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             // After showing all cards briefly, turn down only unmatched cards
@@ -332,11 +336,12 @@ public class MemoryGameLevelScreen extends JFrame {
         shuffleTimer.start();
 
         try {
-            shuffleThread.join(); // Ensure that the shuffle logic completes
+            shuffleThread.join(); // Ensure that the shuffle logic completes before final GUI update
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
+
 
     private void refreshDisplay() {
         for (int i = 0; i < cards.length; i++) {
